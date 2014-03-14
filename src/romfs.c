@@ -35,7 +35,7 @@ int romfs_open_recur(int device, char *path, int this, struct romfs_entry *entry
 
             /* Compare path */
             int len = strlen((char *)entry->name);
-            if (strncmp((char *)entry->name, path, len) == 0) {
+           if (strncmp((char *)entry->name, path, len) == 0) {
                 if (path[len] == '/') { /* Match directory */
                     return romfs_open_recur(device, path + len + 1, pos, entry);
                 }
@@ -95,11 +95,11 @@ void romfs_server()
 	                pos = request.pos; /* searching starting position */
 	                pos = romfs_open(request.device, request.path + pos, &entry);
 
-	                if (pos >= 0) { /* Found */
+	                if (pos >= 0 || request.path[0] == '/') { /* Found */
 	                    /* Register */
 	                    status = path_register(request.path);
 
-                        if (status != -1) {
+                         if (status != -1) {
                             mknod(status, 0, S_IFREG);
 	                        files[nfiles].fd = status;
 	                        files[nfiles].device = request.device;

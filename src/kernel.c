@@ -710,7 +710,13 @@ void show_xxd(int argc, char *argv[])
 //ls
 void show_ls(int argc, char *argv[])
 {
+    int readfd = -1;
+    char chout[2]={0};
 
+    readfd = open("/", 0);
+    lseek(readfd,0,SEEK_SET);
+    read(readfd, &chout[0], 1); 
+    write(fdout, chout, 2);   
 }
 void first()
 {
