@@ -52,6 +52,7 @@ void show_task_info(int argc, char *argv[]);
 void show_man_page(int argc, char *argv[]);
 void show_history(int argc, char *argv[]);
 void show_xxd(int argc, char *argv[]);
+void show_ls(int argc, char *argv[]);
 
 /* Enumeration for command types. */
 enum {
@@ -62,6 +63,7 @@ enum {
 	CMD_MAN,
 	CMD_PS,
 	CMD_XXD,
+	CMD_LS,
 	CMD_COUNT
 } CMD_TYPE;
 /* Structure for command handler. */
@@ -78,6 +80,7 @@ const hcmd_entry cmd_data[CMD_COUNT] = {
 	[CMD_MAN] = {.cmd = "man", .func = show_man_page, .description = "Manual pager."},
 	[CMD_PS] = {.cmd = "ps", .func = show_task_info, .description = "List all the processes."},
 	[CMD_XXD] = {.cmd = "xxd", .func = show_xxd, .description = "Make a hexdump."},
+	[CMD_LS] = {.cmd = "ls", .func = show_ls, .description = "list dirs"},
 };
 
 /* Structure for environment variables. */
@@ -704,8 +707,11 @@ void show_xxd(int argc, char *argv[])
         write(fdout, "\r\n", 3);
     }
 }
+//ls
+void show_ls(int argc, char *argv[])
+{
 
-
+}
 void first()
 {
 	if (!fork()) setpriority(0, 0), pathserver();
