@@ -22,7 +22,8 @@ struct romfs_entry {
     uint32_t len;
     uint8_t name[PATH_MAX];
 };
-
+const char _eromdev;
+const char _sromdev;
 int romfs_open_recur(int device, char *path, int this, struct romfs_entry *entry)
 {
     if (entry->isdir) {
@@ -94,8 +95,9 @@ void romfs_server()
 	                from = request.from;
 	                pos = request.pos; /* searching starting position */
 	                pos = romfs_open(request.device, request.path + pos, &entry);
-
-	                if (pos >= 0 || request.path[0] == '/') { /* Found */
+                        if (request.path[0] == '/' && pos == -1)
+			    pos = 0;
+	                if (pos >= 0) { /* Found */
 	                    /* Register */
 	                    status = path_register(request.path);
 
@@ -104,7 +106,10 @@ void romfs_server()
 	                        files[nfiles].fd = status;
 	                        files[nfiles].device = request.device;
 	                        files[nfiles].start = pos + sizeof(entry);
-	                        files[nfiles].len = entry.len;
+	                        if(request.path[0] == '/'&& pos == 0 )
+		                	files[nfiles].len = &_eromdev - &_sromdev - sizeof(struct romfs_entry);
+				else	
+					files[nfiles].len = entry.len;
 	                        nfiles++;
 	                    }
 	                }
@@ -172,7 +177,8 @@ void romfs_server()
                     }
 
 	                if (pos == 0) { /* SEEK_SET */
-	                }
+	               
+		        }
 	                else if (pos < 0) { /* SEEK_END */
 	                    size = (files[i].len) + size;
 	                }

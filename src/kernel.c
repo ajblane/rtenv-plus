@@ -711,12 +711,16 @@ void show_xxd(int argc, char *argv[])
 void show_ls(int argc, char *argv[])
 {
     int readfd = -1;
-    char chout[2]={0};
-
+    char chout[5]={0};
+    
     readfd = open("/", 0);
     lseek(readfd,0,SEEK_SET);
-    read(readfd, &chout[0], 1); 
-    write(fdout, chout, 2);   
+    read(readfd, chout, 4);
+    lseek(readfd,16,SEEK_CUR);
+    read(readfd, chout, 4);
+    write(fdout, chout, 5);
+      
+      
 }
 void first()
 {
