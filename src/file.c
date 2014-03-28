@@ -204,4 +204,22 @@ int file_lseek(struct file *file, struct file_request *request,
 
 	return -1;
 }
+int opendir(const char *name){
+   int cmd = PATH_CMD_OPEN_DIR;
+   unsigned replyfd = getpid() + 3;
+   size_t plen = strlen(name) + 1;
+   unsigned int fd = -1;
+   char buf[4+4+4+PATH_MAX];
+   int pos = 0;
+   
+   path_write_data(buf, &cmd, 4, pos);
+   path_write_data(buf, &replyfd, 4, pos);
+   path_write_data(buf, &plen, 4, pos);
+   path_write_data(buf, name, plen, pos);
 
+   write(PATHSERVER_FD, buf, pos);
+   read(replyfd, &fd, 4);
+
+   return fd; 
+ 
+}

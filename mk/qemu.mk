@@ -15,6 +15,11 @@ qemudbg: $(OUTDIR)/$(TARGET).bin $(QEMU_STM32)
 	cat $(OUTDIR)/qemu_pid | `xargs kill 2>/dev/null || test true` && \
 	rm -f $(OUTDIR)/qemu_pid
 
+dbg: $(OUTDIR)/$(TARGET).bin $(QEMU_STM32)
+	$(QEMU_STM32) -M stm32-p103 \
+		-gdb tcp::3333 -S \
+		-kernel $(OUTDIR)/$(TARGET).bin
+
 qemu_remote: $(OUTDIR)/$(TARGET).bin $(QEMU_STM32)
 	$(QEMU_STM32) -M stm32-p103 -kernel $(OUTDIR)/$(TARGET).bin -vnc :1
 

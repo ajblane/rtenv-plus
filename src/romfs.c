@@ -90,13 +90,30 @@ void romfs_server()
         if (read(self, &request, sizeof(request)) == sizeof(request)) {
             cmd = request.cmd;
 	        switch (cmd) {
-	            case FS_CMD_OPEN:
+	             case FS_CMD_OPEN_ROOT_FIRST_ENTRY:
+                        /*getting root first  entry */
+                        device = request.device;
+                        from = request.from;
+                        pos = 0;
+                        lseek(device, 0, SEEK_SET);
+                        read(device, &entry, sizeof(entry));
+                        status = path_register(request.path);
+                        if(status != -1){
+                                mknod(status, 0, S_IFREG);
+                                files[nfiles].fd = status;
+                                files[nfiles].device = request.device;
+                                files[nfiles].start = pos + sizeof(entry);
+                                files[nfiles].len = &_eromdev - &_sromdev - sizeof(entry) ;
+                                nfiles++;
+                        }
+                        write(from, &status, sizeof(status));
+                     break;
+            
+		    case FS_CMD_OPEN:
 	                device = request.device;
 	                from = request.from;
 	                pos = request.pos; /* searching starting position */
 	                pos = romfs_open(request.device, request.path + pos, &entry);
-                        if (request.path[0] == '/' && pos == -1)
-			    pos = 0;
 	                if (pos >= 0) { /* Found */
 	                    /* Register */
 	                    status = path_register(request.path);
@@ -106,10 +123,7 @@ void romfs_server()
 	                        files[nfiles].fd = status;
 	                        files[nfiles].device = request.device;
 	                        files[nfiles].start = pos + sizeof(entry);
-	                        if(request.path[0] == '/'&& pos == 0 )
-		                	files[nfiles].len = &_eromdev - &_sromdev - sizeof(struct romfs_entry);
-				else	
-					files[nfiles].len = entry.len;
+				files[nfiles].len = entry.len;
 	                        nfiles++;
 	                    }
 	                }

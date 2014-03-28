@@ -29,6 +29,8 @@
 
 #define FILE_EVENT_IS_READ(event) ((event) % 2 == 0)
 
+#define DIR unsigned int
+
 struct file_request {
     struct task_control_block *task;
     char *buf;
@@ -62,5 +64,7 @@ int file_mknod(int fd, int driver_pid, struct file *files[], int dev,
                struct event_monitor *event_monitor);
 int file_lseek(struct file *file, struct file_request *request,
                struct event_monitor *monitor);
+
+int opendir(const char *name);
 
 #endif

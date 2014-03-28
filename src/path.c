@@ -60,7 +60,7 @@ void pathserver()
 			    }
 			    write(replyfd, &newfd, 4);
 		        break;
-
+		    
 		    case PATH_CMD_OPEN:
 		        read(PATHSERVER_FD, &plen, 4);
 		        read(PATHSERVER_FD, path, plen);
@@ -172,7 +172,20 @@ void pathserver()
                 status = 0;
                 write(replyfd, &status, 4);
 		    }   break;
-
+                case PATH_CMD_OPEN_DIR:
+		   read(PATHSERVER_FD, &plen, 4);
+		   read(PATHSERVER_FD, path, plen);
+		   
+		   int mlen = strlen(mounts[0].path);
+		   struct fs_request request;
+                   request.cmd = FS_CMD_OPEN_ROOT_FIRST_ENTRY;
+		   request.from = replyfd;
+		   request.device = mounts[0].dev;
+		   request.pos = mlen;
+		   
+		   memcpy(request.path, &path, plen);
+		   write(mounts[0].fs, &request, sizeof(request));	
+		break;
 		    default:
 		        ;
 		}
